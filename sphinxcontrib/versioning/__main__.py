@@ -188,8 +188,8 @@ def build_options(func):
     func = click.option('-b', '--show-banner', help='Show a warning banner.', is_flag=True)(func)
     func = click.option('-B', '--banner-main-ref',
                         help="Don't show banner on this ref and point banner URLs to this ref. Default master.")(func)
-    func = click.option('-c', '--copy', multiple=True,
-                       help='Copy a file/directory before building (useful for generated files that are not in git [e.g. Doxygen-generated files]; path relative to REL_SOURCE. Can be specified more than once.')(func)
+    func = click.option('-p', '--pre_script', multiple=False,
+                       help='Execute a script before building (useful for generated files that are not in git [e.g. Doxygen-generated files]')(func)
     func = click.option('-i', '--invert', help='Invert/reverse order of versions.', is_flag=True)(func)
     func = click.option('-p', '--priority', type=click.Choice(('branches', 'tags')),
                         help="Group these kinds of versions at the top (for themes that don't separate them).")(func)
@@ -303,8 +303,7 @@ def build(config, rel_source, destination, **options):
 
     # Pre-build.
     log.info("Pre-running Sphinx to collect versions' master_doc and other info.")
-    exported_root = pre_build(config.git_root, versions)
-    print("CONFIG:", config.copy)
+    exported_root = pre_build(config.git_root, versions, config.pre_script)
     if config.banner_main_ref and config.banner_main_ref not in [r['name'] for r in versions.remotes]:
         log.warning('Banner main ref %s failed during pre-run. Disabling banner.', config.banner_main_ref)
         config.update(dict(banner_greatest_tag=False, banner_main_ref=None, banner_recent_tag=False, show_banner=False),

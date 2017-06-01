@@ -37,6 +37,7 @@ class Config(object):
         self.priority = None
         self.push_remote = 'origin'
         self.root_ref = 'master'
+        self.pre_script = None
 
         # Tuples.
         self.grm_exclude = tuple()
@@ -44,7 +45,6 @@ class Config(object):
         self.sort = tuple()
         self.whitelist_branches = tuple()
         self.whitelist_tags = tuple()
-        self.copy = tuple()
 
         # Integers.
         self.verbose = 0

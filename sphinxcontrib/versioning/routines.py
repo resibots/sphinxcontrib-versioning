@@ -97,7 +97,7 @@ def gather_git_info(root, conf_rel_paths, whitelist_branches, whitelist_tags):
     return whitelisted_remotes
 
 
-def pre_build(local_root, versions):
+def pre_build(local_root, versions, pre_script):
     """Build docs for all versions to determine root directory and master_doc names.
 
     Need to build docs to (a) avoid filename collision with files from root_ref and branch/tag names and (b) determine
@@ -126,10 +126,13 @@ def pre_build(local_root, versions):
     with TempDir() as temp_dir:
         log.debug('Building root (before setting root_dirs) in temporary directory: %s', temp_dir)
         source = os.path.dirname(os.path.join(exported_root, remote['sha'], remote['conf_rel_path']))
-        print("cp -r /Users/jmouret/git/resibots/limbo/docs/doxygen_doc " + source)# working
-        print("cp -r " + local_root + "/docs/* " + source)
-        print('local root', local_root)
-        subprocess.call("cp -r " + local_root + "/docs/* " + source, shell=True, env=None)
+        if pre_script != None:
+            s = "cd " + source + "; " + local_root + "/" + pre_script
+            log.debug("pre_script [%s]", s)
+            ret = subprocess.call(s, shell=True, env=None)
+            if ret != 0:
+                log.warning("WARNING: prescript not called (execution failed)")
+                log.warning("command:", s)
         build(source, temp_dir, versions, remote['name'], True)
         existing = os.listdir(temp_dir)
 
