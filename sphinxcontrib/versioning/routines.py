@@ -96,6 +96,15 @@ def gather_git_info(root, conf_rel_paths, whitelist_branches, whitelist_tags):
 
     return whitelisted_remotes
 
+def run_pre_script(local_root, source, pre_script):
+    log = logging.getLogger(__name__)
+    if pre_script != None:
+        s = "cd " + source + "; " + local_root + "/" + pre_script
+        log.debug("pre_script [%s]", s)
+        ret = subprocess.call(s, shell=True, env=None)
+        if ret != 0:
+            log.warning("WARNING: prescript not called (execution failed)")
+            log.warning("command:", s)
 
 def pre_build(local_root, versions, pre_script):
     """Build docs for all versions to determine root directory and master_doc names.
@@ -126,13 +135,7 @@ def pre_build(local_root, versions, pre_script):
     with TempDir() as temp_dir:
         log.debug('Building root (before setting root_dirs) in temporary directory: %s', temp_dir)
         source = os.path.dirname(os.path.join(exported_root, remote['sha'], remote['conf_rel_path']))
-        if pre_script != None:
-            s = "cd " + source + "; " + local_root + "/" + pre_script
-            log.debug("pre_script [%s]", s)
-            ret = subprocess.call(s, shell=True, env=None)
-            if ret != 0:
-                log.warning("WARNING: prescript not called (execution failed)")
-                log.warning("command:", s)
+        run_pre_script(local_root, source, pre_script)
         build(source, temp_dir, versions, remote['name'], True)
         existing = os.listdir(temp_dir)
 
@@ -149,6 +152,7 @@ def pre_build(local_root, versions, pre_script):
     for remote in list(versions.remotes):
         log.debug('Partially running sphinx-build to read configuration for: %s', remote['name'])
         source = os.path.dirname(os.path.join(exported_root, remote['sha'], remote['conf_rel_path']))
+        run_pre_script(local_root, source, pre_script)
         try:
             config = read_config(source, remote['name'])
         except HandledError:
