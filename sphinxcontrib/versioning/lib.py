@@ -44,6 +44,7 @@ class Config(object):
         self.sort = tuple()
         self.whitelist_branches = tuple()
         self.whitelist_tags = tuple()
+        self.copy = tuple()
 
         # Integers.
         self.verbose = 0

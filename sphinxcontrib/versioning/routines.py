@@ -126,6 +126,10 @@ def pre_build(local_root, versions):
     with TempDir() as temp_dir:
         log.debug('Building root (before setting root_dirs) in temporary directory: %s', temp_dir)
         source = os.path.dirname(os.path.join(exported_root, remote['sha'], remote['conf_rel_path']))
+        print("cp -r /Users/jmouret/git/resibots/limbo/docs/doxygen_doc " + source)# working
+        print("cp -r " + local_root + "/docs/* " + source)
+        print('local root', local_root)
+        subprocess.call("cp -r " + local_root + "/docs/* " + source, shell=True, env=None)
         build(source, temp_dir, versions, remote['name'], True)
         existing = os.listdir(temp_dir)
 
@@ -150,7 +154,6 @@ def pre_build(local_root, versions):
             continue
         remote['found_docs'] = config['found_docs']
         remote['master_doc'] = config['master_doc']
-
     return exported_root
 
 
