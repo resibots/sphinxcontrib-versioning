@@ -188,7 +188,7 @@ def build_options(func):
     func = click.option('-b', '--show-banner', help='Show a warning banner.', is_flag=True)(func)
     func = click.option('-B', '--banner-main-ref',
                         help="Don't show banner on this ref and point banner URLs to this ref. Default master.")(func)
-    func = click.option('-p', '--pre_script', multiple=False,
+    func = click.option('-e', '--exec_script', multiple=False,
                        help='Execute a script before building (useful for generated files that are not in git [e.g. Doxygen-generated files]')(func)
     func = click.option('-i', '--invert', help='Invert/reverse order of versions.', is_flag=True)(func)
     func = click.option('-p', '--priority', type=click.Choice(('branches', 'tags')),
